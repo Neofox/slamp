@@ -1,0 +1,18 @@
+{
+    "name": "alembic/slamp",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Morgan Touverey Quilling",
+            "email": "mtouverey@methodinthemadness.eu"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"Slamp\\": "src/"},
+        "classmap": ["src/Exception/SlackExceptionsCombined.php"]
+    },
+    "require": {
+        "amphp/artax": "^2.0"
+    }
+}
