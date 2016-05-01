@@ -20,17 +20,6 @@ class SlackObject implements \ArrayAccess, \JsonSerializable
     private $data;
 
 
-    final public static function fromJson(string $json, string $fromProperty = null) : SlackObject
-    {
-        $data = json_decode($json, true);
-
-        if(!is_array($data)) {
-            throw new \InvalidArgumentException('Unexpected object format - expecting JSON object/array.');
-        }
-
-        return new static($fromProperty ? $data[$fromProperty] : $data);
-    }
-
     public function __construct(array $data)
     {
         $this->data = $data;

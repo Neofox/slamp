@@ -43,16 +43,18 @@ class WebClient
                 try {
                     if($err) throw $err;
 
-                    $content = $unpackClass::fromJson($res->getBody(), $unpackProp);
-                    if(($content['ok'] ?? false) !== true) {
+                    if(!is_array($content = json_decode($res->getBody(), true))) {
+                        throw new \InvalidArgumentException('Unexpected object format - expecting JSON object/array.');
+                    } elseif(($content['ok'] ?? false) !== true) {
                         throw SlackException::fromSlackCode($content['error'] ?? 'unknown_error');
                     }
+                    
+                    $object = new $unpackClass($unpackProp ? $content[$unpackProp] : $content);
+                    $promisor->succeed($object);
                 } catch(\Throwable $err) {
                     $promisor->fail($err);
                     return;
                 }
-
-                $promisor->succeed($content);
             }
         );
         
