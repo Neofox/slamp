@@ -10,9 +10,7 @@
 
 namespace Slamp;
 
-use Amp\Artax\{
-    Client, Request, Response
-};
+use Amp\Artax\{Client, Request, Response};
 use Amp\{Promise, Deferred};
 use Slamp\Exception\SlackException;
 
@@ -36,25 +34,25 @@ class WebClient
         $this->token = $token;
     }
 
-    public function call(string $method, array $arguments = []) : Promise
+    public function call(string $method, array $arguments = [], string $unpackClass = SlackObject::class, string $unpackProp = null) : Promise
     {
         $promisor = new Deferred;
         
         $this->doHttpRequest($method, $arguments)->when(
-            function(\Throwable $err = null, Response $res = null) use($promisor) {
+            function(\Throwable $err = null, Response $res = null) use($unpackClass, $unpackProp, $promisor) {
                 try {
                     if($err) throw $err;
 
-                    $content = JsonPayload::fromJson($res->getBody());
-                    if(($content->data['ok'] ?? false) !== true) {
-                        throw SlackException::fromSlackCode($content->data['error'] ?? 'unknown_error');
+                    $content = $unpackClass::fromJson($res->getBody(), $unpackProp);
+                    if(($content['ok'] ?? false) !== true) {
+                        throw SlackException::fromSlackCode($content['error'] ?? 'unknown_error');
                     }
                 } catch(\Throwable $err) {
                     $promisor->fail($err);
                     return;
                 }
 
-                $promisor->succeed($content->data);
+                $promisor->succeed($content);
             }
         );
         
