@@ -17,12 +17,26 @@ namespace Slamp;
  */
 class SlackObject implements \ArrayAccess, \JsonSerializable
 {
+    private $webClient;
+
     private $data;
 
 
-    public function __construct(array $data)
+    final public static function fromArray(array $data)
     {
-        $this->data = $data;
+        $object = new static;
+        $object->data = $data;
+
+        return $object;
+    }
+
+    final public static function fromClientAndArray(WebClient $webClient, array $data)
+    {
+        $object = new static;
+        $object->webClient = $webClient;
+        $object->data = $data;
+
+        return $object;
     }
 
     public function offsetExists($offset)

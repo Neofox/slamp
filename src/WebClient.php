@@ -49,7 +49,7 @@ class WebClient
                         throw SlackException::fromSlackCode($content['error'] ?? 'unknown_error');
                     }
                     
-                    $object = new $unpackClass($unpackProp ? $content[$unpackProp] : $content);
+                    $object = $unpackClass::fromClientAndArray($this, $unpackProp ? $content[$unpackProp] : $content);
                     $promisor->succeed($object);
                 } catch(\Throwable $err) {
                     $promisor->fail($err);
