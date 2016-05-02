@@ -26,7 +26,6 @@ class SlackException extends \Exception
     
     final public static function fromSlackCode(string $slackCode) : SlackException
     {
-        var_dump(self::KNOWN_CODES[$slackCode]);
         $class = self::KNOWN_CODES[$slackCode] ?? self::class;
 
         return new $class($slackCode);
