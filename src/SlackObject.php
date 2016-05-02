@@ -17,7 +17,8 @@ namespace Slamp;
  */
 class SlackObject implements \ArrayAccess, \JsonSerializable
 {
-    private $webClient;
+    /** @var WebClient */
+    protected $webClient;
 
     private $data;
 
@@ -47,7 +48,7 @@ class SlackObject implements \ArrayAccess, \JsonSerializable
     public function offsetGet($offset)
     {
         if(!isset($this->data[$offset])) {
-            throw new \DomainException("Invalid offset ${offset}.");
+            throw new \DomainException("Unknown property ${offset}.");
         }
 
         return $this->data[$offset];

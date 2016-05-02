@@ -12,7 +12,7 @@ namespace Slamp;
 
 use Amp\Artax\{Client, Request, Response};
 use Amp\{Promise, Deferred};
-use Slamp\Exception\SlackException;
+use Slamp\{Exception\SlackException, SlackObject};
 
 /**
  * WebClient
@@ -34,7 +34,17 @@ class WebClient
         $this->token = $token;
     }
 
-    public function call(string $method, array $arguments = [], string $unpackClass = SlackObject::class, string $unpackProp = null) : Promise
+    public function getChannelAsync(string $id) : Promise
+    {
+        return $this->callAsync('channels.info', ['channel' => $id], SlackObject\Channel::class, 'channel');
+    }
+
+    public function getUserAsync(string $id) : Promise
+    {
+        return $this->callAsync('users.info', ['user' => $id], SlackObject\User::class, 'user');
+    }
+
+    public function callAsync(string $method, array $arguments = [], string $unpackClass = SlackObject::class, string $unpackProp = null) : Promise
     {
         $promisor = new Deferred;
         
@@ -44,11 +54,12 @@ class WebClient
                     if($err) throw $err;
 
                     if(!is_array($content = json_decode($res->getBody(), true))) {
-                        throw new \InvalidArgumentException('Unexpected object format - expecting JSON object/array.');
+                        throw new \InvalidArgumentException('Slack returned unexpected response format - expecting JSON object/array.');
                     } elseif(($content['ok'] ?? false) !== true) {
                         throw SlackException::fromSlackCode($content['error'] ?? 'unknown_error');
                     }
-                    
+
+                    /** @var SlackObject $unpackClass */
                     $object = $unpackClass::fromClientAndArray($this, $unpackProp ? $content[$unpackProp] : $content);
                     $promisor->succeed($object);
                 } catch(\Throwable $err) {
