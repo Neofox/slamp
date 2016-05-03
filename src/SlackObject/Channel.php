@@ -74,6 +74,11 @@ class Channel extends SlackObject
     {
         return $this['purpose']['value'];
     }
+
+    public function getMembersCount() : int
+    {
+        return count($this['members']);
+    }
     
     public function getMembersAsync() : Promise
     {
