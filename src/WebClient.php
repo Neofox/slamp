@@ -36,20 +36,26 @@ class WebClient
 
     public function getChannelAsync(string $id) : Promise
     {
-        return $this->callAsync('channels.info', ['channel' => $id], SlackObject\Channel::class, 'channel');
+        return $this->objectifyAsync(
+            false, SlackObject\Channel::class, 'channel',
+            $this->callAsync('channels.info', ['channel' => $id])
+        );
     }
 
     public function getUserAsync(string $id) : Promise
     {
-        return $this->callAsync('users.info', ['user' => $id], SlackObject\User::class, 'user');
+        return $this->objectifyAsync(
+            false, SlackObject\User::class, 'user',
+            $this->callAsync('users.info', ['user' => $id])
+        );
     }
 
-    public function callAsync(string $method, array $arguments = [], string $unpackClass = SlackObject::class, string $unpackProp = null) : Promise
+    public function callAsync(string $method, array $arguments = []) : Promise
     {
         $promisor = new Deferred;
         
         $this->doHttpRequest($method, $arguments)->when(
-            function(\Throwable $err = null, Response $res = null) use($unpackClass, $unpackProp, $promisor) {
+            function(\Throwable $err = null, Response $res = null) use($promisor) {
                 try {
                     if($err) throw $err;
 
@@ -59,9 +65,7 @@ class WebClient
                         throw SlackException::fromSlackCode($content['error'] ?? 'unknown_error');
                     }
 
-                    /** @var SlackObject $unpackClass */
-                    $object = $unpackClass::fromClientAndArray($this, $unpackProp ? $content[$unpackProp] : $content);
-                    $promisor->succeed($object);
+                    $promisor->succeed($content);
                 } catch(\Throwable $err) {
                     $promisor->fail($err);
                     return;
@@ -83,5 +87,35 @@ class WebClient
             ->setBody(http_build_query($arguments));
         
         return $this->httpClient->request($request);
+    }
+
+    protected function objectifyAsync(bool $isCollection, string $class, string $property, Promise $futureRawData) : Promise
+    {
+        /** @var SlackObject $class */
+
+        $promisor = new Deferred;
+
+        $futureRawData->when(
+            function(\Throwable $err = null, array $rawData = null) use($isCollection, $class, $property, $promisor) {
+                try {
+                    if($err) throw $err;
+
+                    if($isCollection) {
+                        $objects = [];
+                        foreach($rawData[$property] as $rawObject) {
+                            $objects[] = $class::fromClientAndArray($this, $rawObject);
+                        }
+
+                        $promisor->succeed($objects);
+                    } else {
+                        $promisor->succeed($class::fromClientAndArray($this, $rawData[$property]));
+                    }
+                } catch(\Throwable $err) {
+                    $promisor->fail($err);
+                }
+            }
+        );
+
+        return $promisor->promise();
     }
 }

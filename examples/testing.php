@@ -10,7 +10,7 @@ Amp\run(function() use($client) {
 
     var_dump(count($members));
     foreach($members as $member) {
-        var_dump($member->getPicture(512));
+        var_dump($member->getName());
     }
 });
 
