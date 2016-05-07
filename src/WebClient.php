@@ -23,31 +23,26 @@ class WebClient
 {
     const BASE_URL = 'https://slack.com/api';
 
+    /** @var Client */
     protected $httpClient;
     
+    /** @var string */
     protected $token;
+    
+    /** @var SlackObject\ChannelMethods */
+    public $channels;
+
+    /** @var SlackObject\UserMethods */
+    public $users;
 
 
     public function __construct(string $token)
     {
         $this->httpClient = new Client;
         $this->token = $token;
-    }
-
-    public function getChannelAsync(string $id) : Promise
-    {
-        return $this->objectifyAsync(
-            false, SlackObject\Channel::class, 'channel',
-            $this->callAsync('channels.info', ['channel' => $id])
-        );
-    }
-
-    public function getUserAsync(string $id) : Promise
-    {
-        return $this->objectifyAsync(
-            false, SlackObject\User::class, 'user',
-            $this->callAsync('users.info', ['user' => $id])
-        );
+        
+        $this->channels = new SlackObject\ChannelMethods($this);
+        $this->users    = new SlackObject\UserMethods($this);
     }
 
     public function callAsync(string $method, array $arguments = []) : Promise
@@ -87,35 +82,5 @@ class WebClient
             ->setBody(http_build_query($arguments));
         
         return $this->httpClient->request($request);
-    }
-
-    protected function objectifyAsync(bool $isCollection, string $class, string $property, Promise $futureRawData) : Promise
-    {
-        /** @var SlackObject $class */
-
-        $promisor = new Deferred;
-
-        $futureRawData->when(
-            function(\Throwable $err = null, array $rawData = null) use($isCollection, $class, $property, $promisor) {
-                try {
-                    if($err) throw $err;
-
-                    if($isCollection) {
-                        $objects = [];
-                        foreach($rawData[$property] as $rawObject) {
-                            $objects[] = $class::fromClientAndArray($this, $rawObject);
-                        }
-
-                        $promisor->succeed($objects);
-                    } else {
-                        $promisor->succeed($class::fromClientAndArray($this, $rawData[$property]));
-                    }
-                } catch(\Throwable $err) {
-                    $promisor->fail($err);
-                }
-            }
-        );
-
-        return $promisor->promise();
     }
 }
