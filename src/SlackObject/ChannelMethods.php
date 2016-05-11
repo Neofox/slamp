@@ -69,7 +69,7 @@ class ChannelMethods extends SlackObjectMethods
      */
     public function historyAsync($channel, array $criterion = []) : Promise
     {
-        return $this->callMethodAsync('history', $channel, $criterion, function($result) {
+        return $this->callMethodAsync('history', $channel, $criterion, function(array $result) {
             return $result['messages'];
         });
     }
@@ -145,7 +145,7 @@ class ChannelMethods extends SlackObjectMethods
     }
 
     /**
-     * This method returns a list of all channels in the team.
+     * Returns a list of all channels in the team.
      * This includes channels the caller is in, channels they are not currently in,
      * and archived channels but does not include private channels.
      * @link https://api.slack.com/methods/channels.list
