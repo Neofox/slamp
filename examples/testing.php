@@ -6,7 +6,8 @@ $client = new \Slamp\WebClient(getenv('SLACK_TOKEN'));
 
 Amp\run(function() use($client) {
     $chan = yield $client->channels->infoAsync('C16P4T620');
-    var_dump($chan->getName());
+
+    yield $chan->renameAsync('test-won');
 
     Amp\stop();
 });

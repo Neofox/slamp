@@ -15,6 +15,7 @@ use Slamp\SlackObjectMethods;
 
 /**
  * Team Channel methods.
+ * API methods are listed in alphabetical order.
  *
  * @author Morgan Touverey-Quilling <mtouverey@methodinthemadness.eu>
  */
@@ -163,12 +164,14 @@ class ChannelMethods extends SlackObjectMethods
      * @link https://api.slack.com/methods/channels.mark
      *
      * @param string|Channel $channel
-     * @param \DateTime      $lastRead
+     * @param \DateTime      $lastRead Null is considered to be "now"
      *
      * @return Promise
      */
-    public function markAsync($channel, \DateTime $lastRead) : Promise
+    public function markAsync($channel, \DateTime $lastRead = null) : Promise
     {
+        if(!$lastRead) $lastRead = new \DateTime;
+        
         return $this->callMethodAsync('mark', $channel, ['ts' => $lastRead]);
     }
 
