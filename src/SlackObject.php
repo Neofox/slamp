@@ -23,7 +23,7 @@ class SlackObject implements \ArrayAccess, \JsonSerializable
     private $data;
 
 
-    public static function fromArray(array $data)
+    public static function fromArray(array $data) : SlackObject
     {
         $object = new static;
         $object->data = $data;
@@ -31,7 +31,7 @@ class SlackObject implements \ArrayAccess, \JsonSerializable
         return $object;
     }
 
-    public static function fromClientAndArray(WebClient $webClient, array $data)
+    public static function fromClientAndArray(WebClient $webClient, array $data) : SlackObject
     {
         $object = new static;
         $object->webClient = $webClient;
@@ -40,7 +40,7 @@ class SlackObject implements \ArrayAccess, \JsonSerializable
         return $object;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset) : bool
     {
         return isset($this->data[$offset]);
     }
