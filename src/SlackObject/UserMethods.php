@@ -31,7 +31,9 @@ class UserMethods extends SlackObjectMethods
     }
 
     /**
-     * @return Promise
+     * Gets the currently logged-in user.
+     * 
+     * @return Promise<User>
      */
     public function getMeAsync() : Promise
     {
