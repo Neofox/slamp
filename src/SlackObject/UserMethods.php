@@ -51,11 +51,11 @@ class UserMethods extends SlackObjectMethods
      * The returned fields depend on any additional authorization scopes you've requested.
      * @link https://api.slack.com/methods/users.identity
      *
-     * @param string|User $user
-     *
      * @return Promise
+     *
+     * @TODO Implement this.
      */
-    public function identityAsync($user) : Promise
+    public function identityAsync() : Promise
     {
         throw new \Exception('Not implemented yet.');
     }
