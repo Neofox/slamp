@@ -78,7 +78,7 @@ class WebClient
         $request = (new Request)
             ->setUri(static::BASE_URL.'/'.$method)
             ->setMethod('POST')
-            ->setAllHeaders(['Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8'])
+            ->setAllHeaders(['Content-Type' => 'application/x-www-form-urlencoded'])
             ->setBody(http_build_query($arguments));
         
         return $this->httpClient->request($request);
