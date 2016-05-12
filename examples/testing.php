@@ -2,12 +2,12 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
-$client = new \Slamp\WebClient(getenv('SLACK_TOKEN'));
+Amp\run(function() {
+    $slack = new Slamp\WebClient(getenv('SLACK_TOKEN'));
 
-Amp\run(function() use($client) {
-    $chan = yield $client->channels->infoAsync('C16P4T620');
+    $me = yield $slack->users->getMeAsync();
 
-    yield $chan->renameAsync('test-won');
+    var_dump($me->getName());
 
     Amp\stop();
 });

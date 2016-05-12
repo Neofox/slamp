@@ -10,7 +10,7 @@
 
 namespace Slamp\SlackObject;
 
-use Amp\Promise;
+use Amp\{Deferred, Promise};
 use Slamp\SlackObjectMethods;
 
 /**
@@ -28,6 +28,33 @@ class UserMethods extends SlackObjectMethods
             'apiName'          => 'user',
             'apiNamePlural'    => 'members'
         ];
+    }
+
+    /**
+     * @return Promise
+     */
+    public function getMeAsync() : Promise
+    {
+        $promisor = new Deferred;
+
+        # We'll get the current user ID by calling auth.test
+        $this->webClient->callAsync('auth.test')->when(
+            function(\Throwable $err = null, array $result = null) use($promisor) {
+                if($err) {
+                    $promisor->fail($err);
+                    return;
+                }
+
+                # Now we have the user ID, let's call self::infoAsync() to get a User object.
+                $this->infoAsync($result['user_id'])->when(
+                    function(\Throwable $err = null, User $me = null) use($promisor) {
+                        $err ? $promisor->fail($err) : $promisor->succeed($me);
+                    }
+                );
+            }
+        );
+
+        return $promisor->promise();
     }
 
     /**
