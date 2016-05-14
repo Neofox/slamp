@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ea8789960f984a6613848c283627f1b4",
+    "hash": "911acad6d9001c93cfd8faf43cc1ea8f",
     "content-hash": "5e6df32912dabad714424a75579c2473",
     "packages": [
         {
             "name": "amphp/amp",
-            "version": "v1.1.0",
+            "version": "v1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/amp.git",
-                "reference": "093d33c36c72c0b4bf505000eb53b97351939279"
+                "reference": "4f2161da5f68f274f116985635aea63b5c0f54d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/amp/zipball/093d33c36c72c0b4bf505000eb53b97351939279",
-                "reference": "093d33c36c72c0b4bf505000eb53b97351939279",
+                "url": "https://api.github.com/repos/amphp/amp/zipball/4f2161da5f68f274f116985635aea63b5c0f54d2",
+                "reference": "4f2161da5f68f274f116985635aea63b5c0f54d2",
                 "shasum": ""
             },
             "require": {
@@ -62,7 +62,7 @@
                 "non-blocking",
                 "promise"
             ],
-            "time": "2016-03-09 13:10:31"
+            "time": "2016-05-12 12:54:59"
         },
         {
             "name": "amphp/artax",
