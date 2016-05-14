@@ -17,16 +17,15 @@ namespace Slamp\Exception;
  */
 class SlackException extends \Exception
 {
-    const KNOWN_CODES = [
-        'invalid_post_type' => InvalidPostTypeException::class
-    ];
-
     protected $slackCode;
     
     
     final public static function fromSlackCode(string $slackCode) : SlackException
     {
-        $class = self::KNOWN_CODES[$slackCode] ?? self::class;
+        # We CamelCasify the slack code and check if there's an exception class for that.
+        # Otherwise, we'll use this class.
+        $neededClass = __NAMESPACE__.'\\'.implode('', array_map('ucfirst', explode('_', $slackCode))).'Exception';
+        $class = class_exists($neededClass) ? $neededClass : self::class;
 
         return new $class($slackCode);
     }
